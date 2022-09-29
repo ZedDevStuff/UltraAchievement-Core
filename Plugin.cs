@@ -77,7 +77,7 @@ namespace UltraAchievement
             rect.SetParent(blank.GetComponent<RectTransform>());
             rect.SetAnchor(AnchorPresets.TopLeft);
             rect.SetPivot(PivotPresets.TopLeft);
-            rect.anchoredPosition = new Vector2(0,0);
+            rect.anchoredPosition = new Vector2(102,0);
             rect.sizeDelta = new Vector2(300,25);
             title.GetComponent<Text>().text = "Title";
             title.GetComponent<Text>().fontSize = 20;
@@ -90,7 +90,7 @@ namespace UltraAchievement
             rect.SetAsLastSibling();
             rect.SetAnchor(AnchorPresets.TopLeft);
             rect.SetPivot(PivotPresets.TopLeft);
-            rect.anchoredPosition = new Vector2(0,-25);
+            rect.anchoredPosition = new Vector2(102,-25);
             rect.sizeDelta = new Vector2(300,75);
             desc.GetComponent<Text>().text = "Description";
             desc.GetComponent<Text>().fontSize = 18;
@@ -100,7 +100,7 @@ namespace UltraAchievement
             rect = icon.GetComponent<RectTransform>();
             rect.SetParent(blank.GetComponent<RectTransform>());
             rect.SetAsLastSibling();
-            rect.anchoredPosition = new Vector2(-100,0);
+            rect.anchoredPosition = new Vector2(0,0);
             return blank;
         }
 
@@ -145,7 +145,7 @@ namespace UltraAchievement
             GameObject blank = CreateImage();
             blank.name = "Panel";
             RectTransform rect = blank.GetComponent<RectTransform>();
-            rect.sizeDelta = new Vector2(250,100);
+            rect.sizeDelta = new Vector2(350,100);
             rect.SetAnchor(AnchorPresets.BottomRight);
             rect.SetPivot(PivotPresets.BottomRight);
             blank.GetComponent<Image>().color = new Color(0.2745f,0.2745f,0.3529f,1f);
