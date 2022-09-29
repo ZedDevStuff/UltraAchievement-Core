@@ -1,6 +1,6 @@
 # UltraAchievement-Core
-BepInEx plugin made to add support for simple custom achievements to (theorically) any BepInEx5 compatible game
-This mod does nothing on its own.
+BepInEx plugin made to add support for simple custom achievements to (theorically) any BepInEx 5 compatible game
+This mod does nothing on its own. At first, I made it for Ultrakill but decided to make it without any dependency to anything so anyone can use it anywhere.
 
 # Installing
 Download the latest realeased .DLL from the releases page and put it in your BepInEx plugin folder or if you use a modloader (ie UMM for ultrakill), put it in its mod folder
