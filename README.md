@@ -12,10 +12,12 @@ Core.ShowAchievement(icon,string name,string description, string mod)
 ```
 `icon` can either be a path to the icon or a `Sprite`. The mod will take care of the rest and keep track of previously acquired achievements so not duplicates shall occur.
 Currently, the mod only allows you to show an achievement but in the future there may be more features.
-Also feel free to fork if you want to add anything. Mod lets you know what mod the achievement comes from
+`mod` lets you know what mod the achievement comes from
+Also feel free to fork if you want to add anything. 
+
 
 ```cs
-Core.ShowAchievement(icon,string name,string description, string sprite, string mod)
+Core.ShowAchievementI(icon,string name,string description, string sprite, string mod)
 ```
 
 `sprite` allows you to add a custom achievement background instead of using the default one

@@ -10,7 +10,7 @@ using System.Linq;
 
 namespace UltraAchievement
 {
-    [BepInPlugin("zeddev.ultraachievement.core", "ultraAchievement Core", "1.0.0")]
+    [BepInPlugin("zeddev.ultraachievement.core", "ultraAchievement Core", "1.1.0")]
     public class Core : BaseUnityPlugin
     {
         public static Core current;
@@ -28,8 +28,8 @@ namespace UltraAchievement
                 obtainedAchievements = GetAchievements();
             }
             else File.Create(path);
-            // For testing purposes only
-            //UnityEngine.SceneManagement.SceneManager.sceneLoaded += Scene;
+            
+            UnityEngine.SceneManagement.SceneManager.sceneLoaded += Scene;
             Logger.LogInfo($"Loaded UltraAchievement core");
             overlay = CreateOverlay();
             achievementTemplate = CreateTemplate();
@@ -38,7 +38,7 @@ namespace UltraAchievement
         
         public static void ShowAchievement(string iconPath, string name = "Achievement", string desc = "Example description", string mod = "unknown")
         {
-            if(!HasAchievement(name))
+            if(!HasAchievement(name, desc, mod))
             {
                 AddAchievement(name,desc,mod);
                 GameObject achievement = CreateTemplate();
@@ -48,7 +48,7 @@ namespace UltraAchievement
         }
         public static void ShowAchievement(Sprite icon, string name = "Achievement", string desc = "Example description", string mod = "unknown")
         {
-            if(!HasAchievement(name))
+            if(!HasAchievement(name,desc,mod))
             {
                 AddAchievement(name, desc, mod);
                 GameObject achievement = CreateTemplate();
@@ -56,9 +56,20 @@ namespace UltraAchievement
                 achievement.GetComponent<Achievement>().InitAchievementI(icon,name,desc);
             }
         }
-        public static void ShowAchievement(Sprite icon, string name = "Achievement", string desc = "Example description", string sprite = "", string mod = "unknown")
+
+        public static void ShowAchievementI(string iconPath, string name = "Achievement", string desc = "Example description", string sprite = "", string mod = "unknown")
         {
-            if (!HasAchievement(name))
+            if (!HasAchievement(name,desc,mod))
+            {
+                AddAchievement(name, desc, mod);
+                GameObject achievement = CreateTemplate(sprite);
+                achievement.GetComponent<RectTransform>().SetParent(current.overlay.GetComponent<RectTransform>());
+                achievement.GetComponent<Achievement>().InitAchievement(iconPath, name, desc);
+            }
+        }
+        public static void ShowAchievementI(Sprite icon, string name = "Achievement", string desc = "Example description", string sprite = "", string mod = "unknown")
+        {
+            if (!HasAchievement(name, desc, mod))
             {
                 AddAchievement(name,desc,mod);
                 GameObject achievement = CreateTemplate(sprite);
@@ -70,8 +81,7 @@ namespace UltraAchievement
         {
             if(scene.name.Contains("Menu"))
             {
-                Logger.LogInfo("In Menu");
-                ShowAchievement($"{Directory.GetCurrentDirectory()}\\BepInEx\\UKMM Mods\\UKUIHelper-v0.7.0\\Sprites\\Sprite.png", "Ultrakillin' Time", "Open Ultrakill");
+                obtainedAchievements = GetAchievements();
             }
         }
 
@@ -155,9 +165,10 @@ namespace UltraAchievement
             return blank;
         }
 
-        private static bool HasAchievement(string name)
+        private static bool HasAchievement(string name, string desc, string mod)
         {
-            if(obtainedAchievements.Contains(name))
+            string achievement = $"{name}.{desc}.{mod}";
+            if(obtainedAchievements.Contains(achievement))
             {
                 return true;
             }
@@ -176,7 +187,7 @@ namespace UltraAchievement
             string[][] achivement = new string[achievements.Count()][];
             foreach (var ach in achievements)
             {
-                achivement[i] = ach.Split(',');
+                achivement[i] = ach.Split('.');
                 i++;
             }
             achivementList = achivement;
