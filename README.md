@@ -10,6 +10,6 @@ Adding support for this mod is extremely simple, just add the logic for detectin
 ```cs
 Core.ShowAchievement(icon,string name,string description)
 ```
-`icon` can either be a path to the icon or a `Sprite`. The mod will take care of the rest and keep track of previously acquired achievements so not duplicates shall occur.
+`icon` can either be a path to the icon or a `Sprite`. The mod will take care of the rest and keep track of previously acquired achievements so no duplicates shall occur.
 Currently, the mod only allows you to show an achievement but in the future there may be more features.
 Also feel free to fork if you want to add anything. 
