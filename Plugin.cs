@@ -10,14 +10,15 @@ using System.Linq;
 
 namespace UltraAchievement
 {
-    [BepInPlugin("zeddev.ultraachievement.core", "ultraAchievement Core", "1.0.0")]
+    [BepInPlugin("zeddev.ultraachievement.core", "ultraAchievement Core", "1.1.0")]
     public class Core : BaseUnityPlugin
     {
         public static Core current;
         private static string path;
-        private static List<string> obtainedAchievements = new List<string>(); 
+        private static List<string> obtainedAchievements;
         private GameObject overlay;
         private GameObject achievementTemplate;
+        public string[][] achivementList;
         private void Awake()
         {
             current = this;
@@ -27,40 +28,60 @@ namespace UltraAchievement
                 obtainedAchievements = GetAchievements();
             }
             else File.Create(path);
-            // For testing purposes only
-            //UnityEngine.SceneManagement.SceneManager.sceneLoaded += Scene;
+            
+            UnityEngine.SceneManagement.SceneManager.sceneLoaded += Scene;
             Logger.LogInfo($"Loaded UltraAchievement core");
             overlay = CreateOverlay();
             achievementTemplate = CreateTemplate();
 
         }
         
-        public static void ShowAchievement(string iconPath, string name = "Achievement", string desc = "Example description")
+        public static void ShowAchievement(string iconPath, string name = "Achievement", string desc = "Example description", string mod = "unknown")
         {
-            if(!HasAchievement(name))
+            if(!HasAchievement(name, desc, mod))
             {
-                AddAchievement(name);
+                AddAchievement(name,desc,mod);
                 GameObject achievement = CreateTemplate();
                 achievement.GetComponent<RectTransform>().SetParent(current.overlay.GetComponent<RectTransform>());
                 achievement.GetComponent<Achievement>().InitAchievement(iconPath,name,desc);
             }
         }
-        public static void ShowAchievement(Sprite icon, string name = "Achievement", string desc = "Example description")
+        public static void ShowAchievement(Sprite icon, string name = "Achievement", string desc = "Example description", string mod = "unknown")
         {
-            if(!HasAchievement(name))
+            if(!HasAchievement(name,desc,mod))
             {
-                AddAchievement(name);
+                AddAchievement(name, desc, mod);
                 GameObject achievement = CreateTemplate();
                 achievement.GetComponent<RectTransform>().SetParent(current.overlay.GetComponent<RectTransform>());
                 achievement.GetComponent<Achievement>().InitAchievementI(icon,name,desc);
+            }
+        }
+
+        public static void ShowAchievementI(string iconPath, string name = "Achievement", string desc = "Example description", string sprite = "", string mod = "unknown")
+        {
+            if (!HasAchievement(name,desc,mod))
+            {
+                AddAchievement(name, desc, mod);
+                GameObject achievement = CreateTemplate(sprite);
+                achievement.GetComponent<RectTransform>().SetParent(current.overlay.GetComponent<RectTransform>());
+                achievement.GetComponent<Achievement>().InitAchievement(iconPath, name, desc);
+            }
+        }
+        public static void ShowAchievementI(Sprite icon, string name = "Achievement", string desc = "Example description", string sprite = "", string mod = "unknown")
+        {
+            if (!HasAchievement(name, desc, mod))
+            {
+                AddAchievement(name,desc,mod);
+                GameObject achievement = CreateTemplate(sprite);
+                achievement.GetComponent<RectTransform>().SetParent(current.overlay.GetComponent<RectTransform>());
+                achievement.GetComponent<Achievement>().InitAchievementI(icon, name, desc);
             }
         }
         void Scene(UnityEngine.SceneManagement.Scene scene, UnityEngine.SceneManagement.LoadSceneMode loadSceneMode)
         {
             if(scene.name.Contains("Menu"))
             {
-                Logger.LogInfo("In Menu");
-                ShowAchievement($"{Directory.GetCurrentDirectory()}\\BepInEx\\UKMM Mods\\UKUIHelper-v0.7.0\\Sprites\\Sprite.png", "Ultrakillin' Time", "Open Ultrakill");
+                obtainedAchievements = GetAchievements();
             }
         }
 
@@ -104,22 +125,72 @@ namespace UltraAchievement
             return blank;
         }
 
-        private static bool HasAchievement(string name)
+        public static GameObject CreateTemplate(string sprite)
         {
-            if(obtainedAchievements.Contains(name))
+            GameObject blank = CreatePanel(sprite);
+            blank.name = "Achievement";
+            blank.AddComponent<Achievement>();
+            blank.transform.position = new Vector3(1000, 1000);
+
+            GameObject title = CreateText();
+            title.name = "Title";
+            RectTransform rect = title.GetComponent<RectTransform>();
+            rect.SetParent(blank.GetComponent<RectTransform>());
+            rect.SetAnchor(AnchorPresets.TopLeft);
+            rect.SetPivot(PivotPresets.TopLeft);
+            rect.anchoredPosition = new Vector2(102, 0);
+            rect.sizeDelta = new Vector2(300, 25);
+            title.GetComponent<Text>().text = "Title";
+            title.GetComponent<Text>().fontSize = 20;
+            title.GetComponent<Text>().fontStyle = FontStyle.Bold;
+
+            GameObject desc = CreateText();
+            desc.name = "Description";
+            rect = desc.GetComponent<RectTransform>();
+            rect.SetParent(blank.GetComponent<RectTransform>());
+            rect.SetAsLastSibling();
+            rect.SetAnchor(AnchorPresets.TopLeft);
+            rect.SetPivot(PivotPresets.TopLeft);
+            rect.anchoredPosition = new Vector2(102, -25);
+            rect.sizeDelta = new Vector2(300, 75);
+            desc.GetComponent<Text>().text = "Description";
+            desc.GetComponent<Text>().fontSize = 18;
+
+            GameObject icon = CreateImage();
+            icon.name = "Icon";
+            rect = icon.GetComponent<RectTransform>();
+            rect.SetParent(blank.GetComponent<RectTransform>());
+            rect.SetAsLastSibling();
+            rect.anchoredPosition = new Vector2(0, 0);
+            return blank;
+        }
+
+        private static bool HasAchievement(string name, string desc, string mod)
+        {
+            string achievement = $"{name}.{desc}.{mod}";
+            if(obtainedAchievements.Contains(achievement))
             {
                 return true;
             }
             else return false;
         }
-        private static void AddAchievement(string name)
+        private static void AddAchievement(string name, string desc, string mod)
         {
-            obtainedAchievements.Add(name);
-            File.WriteAllLines(path,obtainedAchievements);
+            obtainedAchievements.Add($"{name}.{desc}.{mod}");
+            File.WriteAllLines(path, obtainedAchievements);
         }
         private List<string> GetAchievements()
         {
+
             List<string> achievements = File.ReadAllLines(path).ToList<string>();
+            int i = 0;
+            string[][] achivement = new string[achievements.Count()][];
+            foreach (var ach in achievements)
+            {
+                achivement[i] = ach.Split('.');
+                i++;
+            }
+            achivementList = achivement;
             return achievements;
         }
 
@@ -149,6 +220,21 @@ namespace UltraAchievement
             rect.SetAnchor(AnchorPresets.BottomRight);
             rect.SetPivot(PivotPresets.BottomRight);
             blank.GetComponent<Image>().color = new Color(0.2745f,0.2745f,0.3529f,1f);
+            return blank;
+        }
+        private static GameObject CreatePanel(string sprite)
+        {
+            GameObject blank = CreateImage();
+            blank.name = "Panel";
+            RectTransform rect = blank.GetComponent<RectTransform>();
+            rect.sizeDelta = new Vector2(350, 100);
+            rect.SetAnchor(AnchorPresets.BottomRight);
+            rect.SetPivot(PivotPresets.BottomRight);
+            if (sprite != "") {
+                blank.GetComponent<Image>().sprite = Core.LoadSprite(sprite, Vector4.zero,100);
+                return blank;
+            }
+            blank.GetComponent<Image>().color = new Color(0.2745f, 0.2745f, 0.3529f, 1f);
             return blank;
         }
         private static GameObject CreateImage()

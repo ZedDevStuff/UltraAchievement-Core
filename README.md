@@ -8,8 +8,16 @@ Download the latest realeased .DLL from the releases page and put it in your Bep
 # Adding support for your mod
 Adding support for this mod is extremely simple, just add the logic for detecting when the achievement should be given to the player then call 
 ```cs
-Core.ShowAchievement(icon,string name,string description)
+Core.ShowAchievement(icon,string name,string description, string mod)
 ```
 `icon` can either be a path to the icon or a `Sprite`. The mod will take care of the rest and keep track of previously acquired achievements so no duplicates shall occur.
 Currently, the mod only allows you to show an achievement but in the future there may be more features.
+`mod` lets you know what mod the achievement comes from
 Also feel free to fork if you want to add anything. 
+
+
+```cs
+Core.ShowAchievementI(icon,string name,string description, string sprite, string mod)
+```
+
+`sprite` allows you to add a custom achievement background instead of using the default one
